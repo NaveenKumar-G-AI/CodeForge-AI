@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+.env
+.env.local
+.env.development
+.env.production
+unified/node_modules/
+unified/dist/
+unified/coverage/
+unified/.env
+unified/.env.local
+unified/.env.development
+unified/.env.production
