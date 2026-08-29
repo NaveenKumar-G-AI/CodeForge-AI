@@ -29,6 +29,9 @@ import type {
   Milestone,
   DailyPlan,
   WeeklyPlan,
+  LearningSession,
+  LearningSessionEvent,
+  LearningSessionState,
   DiagnosticSession,
   DiagnosticAttempt,
   InterviewBlueprint,
@@ -272,6 +275,22 @@ export interface WeeklyPlanRepository {
   findByStudentAndWeek(studentId: UUID, weekStart: string): Promise<WeeklyPlan | null>;
   findByStudentAndRange(studentId: UUID, start: string, end: string): Promise<WeeklyPlan[]>;
   upsert(plan: WeeklyPlan): Promise<WeeklyPlan>;
+}
+
+// ============================================================================
+// LEARNING SESSION REPOSITORIES (Part 7)
+// ============================================================================
+
+export interface LearningSessionRepository extends Repository<LearningSession> {
+  findByStudent(studentId: UUID, options?: { limit?: number; state?: LearningSessionState }): Promise<LearningSession[]>;
+  findByStudentAndState(studentId: UUID, state: LearningSessionState): Promise<LearningSession[]>;
+  findActiveByStudent(studentId: UUID): Promise<LearningSession | null>;
+}
+
+export interface LearningSessionEventRepository {
+  findBySession(sessionId: UUID): Promise<LearningSessionEvent[]>;
+  findByStudent(studentId: UUID, limit?: number): Promise<LearningSessionEvent[]>;
+  create(event: LearningSessionEvent): Promise<LearningSessionEvent>;
 }
 
 // ============================================================================
@@ -534,6 +553,10 @@ export interface RepositoryRegistry {
   dailyPlan: DailyPlanRepository;
   weeklyPlan: WeeklyPlanRepository;
 
+  // Part 7
+  learningSession: LearningSessionRepository;
+  learningSessionEvent: LearningSessionEventRepository;
+
   // Part 2
   diagnosticSession: DiagnosticSessionRepository;
   diagnosticAttempt: DiagnosticAttemptRepository;
@@ -649,6 +672,7 @@ export function createRepositoryRegistry(db: any): RepositoryRegistry {
   const careerContexts = new Map<UUID, StudentCareerContext>();
   const dailyPlans = new Map<string, DailyPlan>();
   const weeklyPlans = new Map<string, WeeklyPlan>();
+  const learningSessionEvents = new Map<UUID, LearningSessionEvent>();
 
   return {
     careerDomain: withCrud<CareerDomain, Omit<CareerDomainRepository, keyof Repository<CareerDomain>>>((repo) => ({
@@ -788,6 +812,39 @@ export function createRepositoryRegistry(db: any): RepositoryRegistry {
       async findByStudentAndWeek(studentId, weekStart) { return weeklyPlans.get(`${studentId}:${weekStart}`) ?? null; },
       async findByStudentAndRange(studentId) { return Array.from(weeklyPlans.values()).filter(p => p.studentId === studentId); },
       async upsert(plan) { weeklyPlans.set(`${plan.studentId}:${plan.weekStart}`, plan); return plan; },
+    },
+    learningSession: withCrud<LearningSession, Omit<LearningSessionRepository, keyof Repository<LearningSession>>>((repo) => ({
+      async findByStudent(studentId, options) {
+        let sessions = Array.from(repo.items.values()).filter(s => s.studentId === studentId);
+        if (options?.state) sessions = sessions.filter(s => s.state === options.state);
+        sessions = sessions.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        return typeof options?.limit === 'number' ? sessions.slice(0, options.limit) : sessions;
+      },
+      async findByStudentAndState(studentId, state) {
+        return this.findByStudent(studentId, { state });
+      },
+      async findActiveByStudent(studentId) {
+        return Array.from(repo.items.values())
+          .filter(s => s.studentId === studentId && (s.state === 'ACTIVE' || s.state === 'PAUSED'))
+          .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ?? null;
+      },
+    })),
+    learningSessionEvent: {
+      async findBySession(sessionId) {
+        return Array.from(learningSessionEvents.values())
+          .filter(event => event.sessionId === sessionId)
+          .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      },
+      async findByStudent(studentId, limit) {
+        const events = Array.from(learningSessionEvents.values())
+          .filter(event => event.studentId === studentId)
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        return typeof limit === 'number' ? events.slice(0, limit) : events;
+      },
+      async create(event) {
+        learningSessionEvents.set(event.id, event);
+        return event;
+      },
     },
     diagnosticSession: Object.assign(withCrud<DiagnosticSession, Omit<DiagnosticSessionRepository, keyof Repository<DiagnosticSession>>>(() => ({
       async findByStudent() { return []; },

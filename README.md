@@ -1,6 +1,6 @@
 # CodeForge AI — Unified Platform
 
-A unified platform for adaptive programming education, combining 15 independently-developed parts into a single cohesive system.
+A unified platform for adaptive programming education, combining Parts 1-40 into a single cohesive system.
 
 ## Architecture Overview
 
@@ -25,15 +25,18 @@ unified/
 │   │   ├── difficulty.ts        # Difficulty adaptation (Parts 3, 5)
 │   │   ├── recommendation.ts    # Recommendation pipeline (Parts 5, 3)
 │   │   ├── roadmap.ts           # Roadmap & planning (Part 6)
+│   │   ├── learning-session/     # Learning session orchestration (Part 7)
 │   │   └── index.ts             # Engine registry
 │   ├── api/
 │   │   ├── middleware/auth.ts   # Auth, RBAC, rate limiting
-│   │   └── routes/              # API routes for all 15 parts
+│   │   └── routes/              # API routes for integrated parts
 │   └── server.ts                # Main Express server
 ├── db/
 │   ├── migrations/
 │   │   ├── 0001_core_schema.sql # Complete merged schema
-│   │   └── 0002_rls_policies.sql # Row Level Security policies
+│   │   ├── 0002_rls_policies.sql # Row Level Security policies
+│   │   ├── 0003_analysis_features.sql # Analysis and intelligence features
+│   │   └── 0004_learning_sessions.sql # Part 7 persistence and RLS
 │   └── seed/                    # Seed data
 └── scripts/
     ├── migrate.ts               # Migration runner
@@ -50,6 +53,7 @@ unified/
 | 4 | Evaluation Engine | ✅ |
 | 5 | Adaptive Engine | ✅ |
 | 6 | Roadmap & Mastery Journey | ✅ |
+| 7 | Learning Session Orchestration | ✅ |
 | 8 | Interview Simulation | ✅ |
 | 9 | Mastery Estimation | ✅ |
 | 10 | Engineering Simulator | ✅ |
@@ -135,6 +139,22 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:5173
 - `GET /api/v1/roadmap/plan/daily` - Daily practice plan
 - `GET /api/v1/roadmap/plan/weekly` - Weekly practice plan
 - `POST /api/v1/roadmap/recalculate` - Trigger recalculation
+
+### Learning Sessions (Part 7)
+- `GET /api/v1/learning-sessions` - List learning sessions
+- `POST /api/v1/learning-sessions` - Create a time-boxed session from roadmap/recommendations
+- `GET /api/v1/learning-sessions/active/current` - Get active or paused session
+- `GET /api/v1/learning-sessions/:id` - Get session state and next action
+- `POST /api/v1/learning-sessions/:id/start` - Start session and first activity
+- `POST /api/v1/learning-sessions/:id/pause` - Pause session
+- `POST /api/v1/learning-sessions/:id/resume` - Resume session
+- `POST /api/v1/learning-sessions/:id/complete` - Complete session
+- `POST /api/v1/learning-sessions/:id/abandon` - Abandon session
+- `POST /api/v1/learning-sessions/:id/activities/:activityId/start` - Start a specific activity
+- `POST /api/v1/learning-sessions/:id/activities/:activityId/complete` - Complete an activity
+- `POST /api/v1/learning-sessions/:id/activities/:activityId/skip` - Skip an activity
+- `GET /api/v1/learning-sessions/:id/summary` - Get session summary
+- `GET /api/v1/learning-sessions/:id/events` - Get lifecycle events
 
 ### Interview (Part 8)
 - `GET /api/v1/interview/blueprints` - List interview blueprints

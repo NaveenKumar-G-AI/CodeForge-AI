@@ -7,6 +7,7 @@ export * from './gaps.js';
 export * from './difficulty.js';
 export * from './recommendation.js';
 export * from './roadmap.js';
+export * from './learning-session/index.js';
 
 // ============================================================================
 // PARTS 16–32 ENGINES
@@ -72,6 +73,7 @@ import {
 } from '../domain/types.js';
 import { RecommendationService, RecommendationServiceConfig } from './recommendation.js';
 import { RoadmapService, RoadmapServiceConfig } from './roadmap.js';
+import { LearningSessionService } from './learning-session/index.js';
 import { initializeCohortIntelligenceService } from './cohort-intelligence/CohortIntelligenceService.js';
 import type { CohortRepository } from './cohort-intelligence/CohortRepository.js';
 import { initializeInterviewService } from './interview/InterviewService.js';
@@ -81,6 +83,7 @@ import type { AIGateway } from './interview/EvaluationPipeline.js';
 export interface EngineRegistry {
   recommendation: RecommendationService;
   roadmap: RoadmapService;
+  learningSession: LearningSessionService;
   // Parts 16-32 engines would be instantiated here
 }
 
@@ -463,6 +466,7 @@ export function createEngineRegistry(db: DatabaseClient, repos: RepositoryRegist
   return {
     recommendation: new RecommendationService(recommendationConfig),
     roadmap: new RoadmapService(roadmapConfig),
+    learningSession: new LearningSessionService(),
   };
 }
 

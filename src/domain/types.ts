@@ -2,7 +2,7 @@
  * CodeForge AI — Unified Domain Types
  *
  * Single source of truth for all domain types across the platform.
- * Consolidates types from Parts 1-15 (excluding Part 7 which doesn't exist).
+ * Consolidates types from Parts 1-40.
  */
 
 // ============================================================================
@@ -982,6 +982,146 @@ export type ActivityType =
   | 'TIMED_CHALLENGE'
   | 'INTERVIEW_CHALLENGE'
   | 'EXPLORATION';
+
+// ---------------------------------------------------------------------------
+// Part 7: Learning Session Orchestration
+// ---------------------------------------------------------------------------
+
+export type LearningSessionMode =
+  | 'FOCUSED_PRACTICE'
+  | 'ROADMAP_BLOCK'
+  | 'REVIEW'
+  | 'ASSESSMENT_PREP'
+  | 'INTERVIEW_PREP'
+  | 'RECOVERY';
+
+export type LearningSessionState =
+  | 'PLANNED'
+  | 'ACTIVE'
+  | 'PAUSED'
+  | 'COMPLETED'
+  | 'ABANDONED'
+  | 'EXPIRED';
+
+export type LearningSessionActivityState =
+  | 'QUEUED'
+  | 'ACTIVE'
+  | 'COMPLETED'
+  | 'SKIPPED';
+
+export type LearningSessionEventType =
+  | 'SESSION_CREATED'
+  | 'SESSION_STARTED'
+  | 'SESSION_PAUSED'
+  | 'SESSION_RESUMED'
+  | 'SESSION_COMPLETED'
+  | 'SESSION_ABANDONED'
+  | 'SESSION_EXPIRED'
+  | 'ACTIVITY_STARTED'
+  | 'ACTIVITY_COMPLETED'
+  | 'ACTIVITY_SKIPPED'
+  | 'EVIDENCE_ATTACHED'
+  | 'NEXT_ACTION_RECOMMENDED';
+
+export type LearningSessionActionType =
+  | 'START_SESSION'
+  | 'RESUME_SESSION'
+  | 'START_ACTIVITY'
+  | 'CONTINUE_ACTIVITY'
+  | 'SUBMIT_ATTEMPT'
+  | 'REQUEST_HINT'
+  | 'TAKE_BREAK'
+  | 'FINISH_SESSION'
+  | 'NO_ACTION_AVAILABLE';
+
+export interface LearningSessionFocus {
+  skillId: UUID;
+  priority: Priority;
+  reason: string;
+  targetMinutes: number;
+  masteryState: MasteryState | null;
+}
+
+export interface LearningSessionActivity {
+  id: UUID;
+  type: ActivityType;
+  skillId: UUID;
+  challengeId: UUID | null;
+  recommendationId: UUID | null;
+  state: LearningSessionActivityState;
+  estimatedMinutes: number;
+  priority: Priority;
+  reason: string;
+  evidenceIds: UUID[];
+  score: number | null;
+  startedAt: ISO8601 | null;
+  completedAt: ISO8601 | null;
+  skippedAt: ISO8601 | null;
+  metadata: Record<string, unknown>;
+}
+
+export interface LearningSession {
+  id: UUID;
+  studentId: UUID;
+  mode: LearningSessionMode;
+  state: LearningSessionState;
+  title: string;
+  focusSkills: LearningSessionFocus[];
+  activities: LearningSessionActivity[];
+  activeActivityId: UUID | null;
+  targetMinutes: number;
+  totalEstimatedMinutes: number;
+  startedAt: ISO8601 | null;
+  endedAt: ISO8601 | null;
+  expiresAt: ISO8601;
+  createdAt: ISO8601;
+  updatedAt: ISO8601;
+  metadata: Record<string, unknown>;
+}
+
+export interface LearningSessionEvent {
+  id: UUID;
+  sessionId: UUID;
+  studentId: UUID;
+  type: LearningSessionEventType;
+  activityId: UUID | null;
+  payload: Record<string, unknown>;
+  createdAt: ISO8601;
+}
+
+export interface LearningSessionNextAction {
+  type: LearningSessionActionType;
+  label: string;
+  reason: string;
+  activityId: UUID | null;
+  challengeId: UUID | null;
+  skillId: UUID | null;
+  priority: Priority | null;
+}
+
+export interface LearningSessionSkillCoverage {
+  skillId: UUID;
+  plannedActivities: number;
+  completedActivities: number;
+  evidenceCount: number;
+  averageScore: number | null;
+}
+
+export interface LearningSessionSummary {
+  sessionId: UUID;
+  studentId: UUID;
+  state: LearningSessionState;
+  completionRatio: number;
+  completedActivities: number;
+  skippedActivities: number;
+  totalActivities: number;
+  minutesPlanned: number;
+  minutesCompleted: number;
+  evidenceCount: number;
+  skillCoverage: LearningSessionSkillCoverage[];
+  nextAction: LearningSessionNextAction;
+  generatedAt: ISO8601;
+}
 
 export interface ReadinessReport {
   studentId: UUID;

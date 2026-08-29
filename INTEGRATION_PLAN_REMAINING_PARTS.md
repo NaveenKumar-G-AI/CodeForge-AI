@@ -118,7 +118,9 @@ The `unified/` folder already contains:
 
 ## Database Migration Strategy
 
-**Migration 0004: Parts 33-40 Tables**
+**Migration 0004 is now assigned to Part 7 learning sessions.**
+
+**Migration 0005: Parts 33-40 Tables**
 - PrepVista Integration tables (10+ tables)
 - Technical Interview tables (5+ tables)
 - Cohort Intelligence tables (8+ tables)
@@ -181,8 +183,8 @@ src/api/routes/incidents.ts     1 file
 src/api/routes/sessions.ts      1 file
 src/api/routes/health.ts        1 file
 src/api/routes/report.ts        1 file
-db/migrations/0004_parts_33_40.sql  1 file
-db/migrations/0005_rls_parts_33_40.sql 1 file
+db/migrations/0005_parts_33_40.sql  1 file
+db/migrations/0006_rls_parts_33_40.sql 1 file
 ```
 
 ### Modify Existing (~50)

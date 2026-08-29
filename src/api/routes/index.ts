@@ -15,6 +15,7 @@ import createRoleRoutes from './roles.js';
 import createCareerContextRoutes from './careerContext.js';
 import createPracticeRoutes from './practice.js';
 import createRoadmapRoutes from './roadmap.js';
+import createLearningSessionRoutes from './learningSessions.js';
 import createIncidentRoutes from './incidents.js';
 import createProjectRoutes from './projects.js';
 import createSubmissionRoutes from './submissions.js';
@@ -68,6 +69,9 @@ export function createAPIRoutes(config: APIRouteConfig): Router {
   // Part 6: Roadmap
   v1.use('/roadmap', createRoadmapRoutes(repos));
 
+  // Part 7: Learning Session Orchestration
+  v1.use('/learning-sessions', createLearningSessionRoutes(repos, engines.learningSession));
+
   // Part 10: Engineering Simulator
   v1.use('/projects', createProjectRoutes(repos));
 
@@ -119,6 +123,7 @@ export function createAPIRoutes(config: APIRouteConfig): Router {
         careerContext: `${v1BasePath}/career-context`,
         practice: `${v1BasePath}/practice`,
         roadmap: `${v1BasePath}/roadmap`,
+        learningSessions: `${v1BasePath}/learning-sessions`,
         interview: `${v1BasePath}/interview`,
         projects: `${v1BasePath}/projects`,
         incidents: `${v1BasePath}/incidents`,

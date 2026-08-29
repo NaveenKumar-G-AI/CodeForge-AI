@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the complete integration of all 15 parts into a single, cohesive CodeForge AI platform. Each part represents a distinct capability that was built independently but designed with clear integration seams.
+This document describes the integrated CodeForge AI platform across Parts 1-40. Each part represents a distinct capability that was built independently and is composed through shared domain types, engines, repositories, and API routes.
 
 ## Architecture Principles
 
@@ -75,12 +75,15 @@ This document describes the complete integration of all 15 parts into a single, 
 Student Auth → Part 1 Role Selection → Career Context Set → Events Emitted
      │                                        │
      ▼                                        ▼
-Part 9 Mastery Init ← Part 6 Roadmap Init ← Part 5 Adaptive Init
+Part 9 Mastery Init ← Part 6 Roadmap Init ← Part 7 Session Init ← Part 5 Adaptive Init
 ```
 
 ### 2. Practice Loop (Core)
 ```
 Recommendation Request
+         │
+         ▼
+Part 7 Learning Session Orchestration
          │
          ▼
 ┌─────────────────────────────────────────────┐
@@ -171,7 +174,7 @@ ExecutionProvider Interface (Part 3, 4, 12, 13)
 
 ### Auth
 ```
-AuthContext (Part 1, 4, 5, 8, 11, 12, 15)
+AuthContext (Part 1, 4, 5, 7, 8, 11, 12, 15)
   studentId, institutionId, role (student/staff/tpo)
 ```
 
@@ -219,6 +222,21 @@ AuthContext (Part 1, 4, 5, 8, 11, 12, 15)
 │   ├── GET /plan/daily
 │   ├── GET /plan/weekly
 │   └── POST /recalculate
+├── /learning-sessions (Part 7)
+│   ├── GET /
+│   ├── POST /
+│   ├── GET /active/current
+│   ├── GET /:id
+│   ├── POST /:id/start
+│   ├── POST /:id/pause
+│   ├── POST /:id/resume
+│   ├── POST /:id/complete
+│   ├── POST /:id/abandon
+│   ├── POST /:id/activities/:activityId/start
+│   ├── POST /:id/activities/:activityId/complete
+│   ├── POST /:id/activities/:activityId/skip
+│   ├── GET /:id/summary
+│   └── GET /:id/events
 ├── /interview (Part 8)
 │   ├── POST /start
 │   ├── GET /session/:id
@@ -294,7 +312,7 @@ Integration Tests
   └── AI provider wiring (Part 3, 4, 8, 9, 10, 14, 15)
 
 E2E Tests
-  ├── Full practice loop (Part 1→5→9→6)
+  ├── Full practice loop (Part 1→5→9→6→7)
   ├── Diagnostic flow (Part 1→2→9)
   ├── Interview flow (Part 1→8→9)
   ├── Incident flow (Part 1→11→9)
@@ -333,13 +351,14 @@ E2E Tests
 2. **Phase 2**: Deploy API servers with Part 1 (Role Context) as foundation
 3. **Phase 3**: Add Part 5/9 (Adaptive + Mastery) - core practice loop
 4. **Phase 4**: Add Part 6 (Roadmap) - planning layer
-5. **Phase 5**: Add Part 3 (Challenge Engine) - richer challenges
-6. **Phase 6**: Add Part 2 (Diagnostic) - baseline assessment
-7. **Phase 7**: Add Part 8 (Interview) - interview prep
-8. **Phase 8**: Add Part 11 (Incident) - SRE training
-9. **Phase 9**: Add Part 10 (Engineering Sim) - project-based learning
-10. **Phase 10**: Add Part 12/13 (Submission + Analysis) - production execution
-11. **Phase 11**: Add Part 14/15 (Coach + Hints) - AI assistance
+5. **Phase 5**: Add Part 7 (Learning Sessions) - session orchestration layer
+6. **Phase 6**: Add Part 3 (Challenge Engine) - richer challenges
+7. **Phase 7**: Add Part 2 (Diagnostic) - baseline assessment
+8. **Phase 8**: Add Part 8 (Interview) - interview prep
+9. **Phase 9**: Add Part 11 (Incident) - SRE training
+10. **Phase 10**: Add Part 10 (Engineering Sim) - project-based learning
+11. **Phase 11**: Add Part 12/13 (Submission + Analysis) - production execution
+12. **Phase 12**: Add Part 14/15 (Coach + Hints) - AI assistance
 
 ## Configuration
 
